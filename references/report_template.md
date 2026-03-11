@@ -5,17 +5,24 @@
 ```markdown
 # Linux <子系统名> 最新 Feature 分析报告
 
-**时间范围：** YYYY年MM月（最近N天）
-**数据来源：** <邮件列表名>
 **生成时间：** YYYY-MM-DD
+**时间范围：** 最近N天
+**数据来源：** <邮件列表名>
 
 ---
 
-## 一、[Feature 标题]
+## 目录
 
+1. [Feature 标题](#1-Feature-标题)
+2. [下一个 Feature](#2-下一个-Feature)
+
+---
+
+## 1. Feature 标题
+
+**系列**：`[PATCH vN 00/N] xxx`
 **作者：** xxx
-**日期：** MM-DD
-**状态：** PATCH vN（N个patch）/ RFC
+**版本：** vN（N个patch）/ RFC
 
 ### 背景
 
@@ -43,12 +50,14 @@
 
 ---
 
-## 二、[下一个 Feature]
+## 2. 下一个 Feature
 ...
 
 ---
 
 ## 总结
+
+xxx
 
 ### 本月技术趋势
 

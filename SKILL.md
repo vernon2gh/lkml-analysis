@@ -165,7 +165,7 @@ git checkout master && git branch -D "analysis/${SUBSYSTEM}-$(date +%Y-%m)"
 
 ## 第五步：生成 Markdown 报告
 
-过滤和分析策略见 `references/filter_rules.md`，报告格式见 `references/report_template.md`。
+过滤和分析策略见 `references/filter_rules.md`，报告格式**必须严格遵循** `references/report_template.md`。
 
 **三档过滤：**
 
@@ -196,7 +196,7 @@ python3 <skill_dir>/scripts/extract_patches.py --read <filepath>
 **保存报告：**
 
 ```bash
-REPORT_FILE="$OUTPUT_DIR/${SUBSYSTEM}-report-$(date +%Y-%m).md"
+REPORT_FILE="$OUTPUT_DIR/${SUBSYSTEM}-report-$(date +%Y-%m-%d).md"
 ```
 
 如有 NACK，在对应 feature 末尾标注 ⚠️。
