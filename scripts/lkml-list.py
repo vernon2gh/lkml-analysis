@@ -3,13 +3,12 @@
 列出索引中的 patch 系列，可按 hint 过滤，可显示封面文件路径。
 
 Usage:
-  python3 lkml-list.py <subsystem> [--hint interesting|maybe|skip|all] [--files]
+  python3 lkml-list.py <subsystem> [--hint interesting|maybe|skip|all|interesting,maybe] [--files]
 
 Examples:
   python3 lkml-list.py mm
   python3 lkml-list.py mm --hint interesting
-  python3 lkml-list.py mm --hint interesting --files
-  python3 lkml-list.py mm --hint maybe --files
+  python3 lkml-list.py mm --hint interesting,maybe --files
 """
 import argparse
 import json
@@ -22,9 +21,8 @@ def main():
     parser.add_argument('subsystem')
     parser.add_argument(
         '--hint',
-        choices=['interesting', 'maybe', 'skip', 'all'],
         default='all',
-        help='按 hint 过滤（默认 all）',
+        help='按 hint 过滤，逗号分隔：interesting,maybe,skip 或 all（默认 all）',
     )
     parser.add_argument(
         '--files', action='store_true',
@@ -44,8 +42,10 @@ def main():
     with open(index_file) as f:
         data = json.load(f)
 
+    hints = set(args.hint.split(',')) if args.hint != 'all' else None
+
     for s in data['series']:
-        if args.hint != 'all' and s['hint'] != args.hint:
+        if hints and s.get('hint', 'skip') not in hints:
             continue
 
         file_keys = list(s['files'].keys())

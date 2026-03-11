@@ -23,10 +23,7 @@
 ## NACK 处理
 
 - 扫描所有回复邮件，检测正文中的 `NACK` 或 `NAK` 关键词（非引用行）
-- 若某 patch 收到明确 NACK，在报告中该 feature 末尾标注：
-  ```
-  ⚠️ NACK：[作者] "NACK 原因"
-  ```
+- 若某 patch 收到明确 NACK，在报告中该 feature 末尾标注：⚠️ NACK：[作者] "NACK 原因"
 - 仅当明确写出 NACK/NAK 时才标注，普通技术质疑不算 NACK
 
 ---
@@ -51,7 +48,7 @@
 
 ## 子系统特定过滤 hint 补充
 
-`extract_patches.py` 的 `hint_from_subject()` 会做通用判断，以下是各子系统额外的 interesting 触发词（供分析时人工参考）：
+`lkml-index.py` 的 `hint_from_subject()` 会做通用判断，以下是各子系统额外的 interesting 触发词（供分析时人工参考）：
 
 | 子系统 | 额外触发词 |
 |--------|-----------|

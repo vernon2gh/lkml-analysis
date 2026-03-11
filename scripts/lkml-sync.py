@@ -10,10 +10,11 @@ Examples:
   python3 lkml-sync.py net --days 7
 """
 import argparse
-import json
 import os
 import subprocess
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _shared import CONFIG_PATH, load_config
 
 LORE_URLS = {
     'mm':       'https://lore.kernel.org/linux-mm',
@@ -25,13 +26,16 @@ LORE_URLS = {
     'bpf':      'https://lore.kernel.org/bpf',
 }
 
-CONFIG_FILE = os.path.expanduser('~/.config/lkml-analysis/config.json')
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_config():
-    with open(CONFIG_FILE) as f:
-        c = json.load(f)
-    return os.path.expanduser(c['mail_base_dir'])
+def ensure_config():
+    if not os.path.exists(CONFIG_PATH):
+        print("未找到配置，启动初始化向导...")
+        result = subprocess.run([sys.executable, os.path.join(SCRIPT_DIR, 'lkml-setup.py')])
+        if result.returncode != 0 or not os.path.exists(CONFIG_PATH):
+            print("配置未完成，退出。", file=sys.stderr)
+            sys.exit(1)
 
 
 def main():
@@ -40,7 +44,8 @@ def main():
     parser.add_argument('--days', type=int, default=30)
     args = parser.parse_args()
 
-    mail_base = load_config()
+    ensure_config()
+    mail_base = load_config()['mail_base_dir']
     maildir = os.path.join(mail_base, args.subsystem)
     lore_url = LORE_URLS[args.subsystem]
 
