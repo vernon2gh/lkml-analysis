@@ -64,53 +64,48 @@ mkdir -p <用户填写的输出目录>
   bpf      - BPF
 ```
 
-各子系统详细信息见 `references/subsystems.md`。
+各子系统的报告标题和保留英文术语见 `references/report_template.md`（子系统参考小节）。
 
 ---
 
 ## 第二步：获取/更新邮件列表
 
-各子系统的 lore URL 见 `references/subsystems.md`。
-
-读取配置，拼接该子系统的 maildir：
-
 ```bash
-MAIL_BASE=$(python3 -c "import json,os; c=json.load(open(os.path.expanduser('~/.config/lkml-analysis/config.json'))); print(os.path.expanduser(c['mail_base_dir']))")
-OUTPUT_DIR=$(python3 -c "import json,os; c=json.load(open(os.path.expanduser('~/.config/lkml-analysis/config.json'))); print(os.path.expanduser(c['output_dir']))")
-SUBSYSTEM="<子系统名>"
-MAILDIR="$MAIL_BASE/$SUBSYSTEM"
-DAYS=<天数>
-LORE_URL="<从上表查到的 lore URL>"
-
-if [ -d "$MAILDIR" ]; then
-    # 邮件目录已存在，只更新当前子系统的邮件列表
-    echo "更新 $SUBSYSTEM 邮件列表..."
-    lei up "$MAILDIR"
-else
-    # 邮件目录不存在，首次用 lei q --only 从 lore 拉取
-    echo "邮件目录不存在，首次从 lore.kernel.org 拉取 $SUBSYSTEM 邮件列表（可能需要几分钟）..."
-    lei q --only="$LORE_URL" \
-          --output="$MAILDIR" \
-          "rt:${DAYS}.days.ago.."
-    echo "拉取完成，共获取邮件：$(find "$MAILDIR" -type f | wc -l) 封"
-fi
+python3 <skill_dir>/scripts/lkml-sync.py <subsystem> --days <天数>
 ```
 
-**注意：**
-- `sched` 子系统的 lore URL 为 lkml（邮件量大），首次拉取耗时较长
-- 拉取完成后，后续可用 `lei up "$MAILDIR"` 增量更新，无需重新拉取
+脚本自动读取配置、判断目录是否存在，并执行 `lei up`（已有）或 `lei q --only=...`（首次）。
+
+**注意：** `sched` 子系统的 lore URL 为 lkml（邮件量大），首次拉取耗时较长。
 
 ---
 
 ## 第三步：建立轻量索引
 
 ```bash
-python3 <skill_dir>/scripts/extract_patches.py \
-  --days <天数> \
-  --maildir "$MAILDIR" \
-  > /tmp/${SUBSYSTEM}_index.json
+python3 <skill_dir>/scripts/lkml-index.py <subsystem> --days <天数>
+```
 
-python3 -c "import json; d=json.load(open('/tmp/${SUBSYSTEM}_index.json')); print(f'共 {d[\"total\"]} 条系列')"
+脚本自动读取配置，将结果保存到 `/tmp/<subsystem>_index.json`，并打印总数和 hint 分布。
+
+完成后列出所有系列（含 hint 和文件键）：
+
+```bash
+python3 <skill_dir>/scripts/lkml-list.py <subsystem>
+```
+
+只看 interesting 并显示封面文件路径：
+
+```bash
+python3 <skill_dir>/scripts/lkml-list.py <subsystem> --hint interesting --files
+```
+
+**自定义子系统**（如 mm-stable）：直接用 `--maildir` 指定路径，跳过配置文件拼接：
+
+```bash
+python3 <skill_dir>/scripts/lkml-index.py mm-stable \
+  --maildir ~/Mail/lei/mm-stable --days 30
+python3 <skill_dir>/scripts/lkml-list.py mm-stable --hint interesting --files
 ```
 
 ---
@@ -142,7 +137,7 @@ MAILDIR="$MAILDIR" LINUX_DIR="$LINUX_DIR" \
   "analysis/${SUBSYSTEM}-$(date +%Y-%m)"
 ```
 
-打入后查看代码上下文（各子系统核心目录见 `references/subsystems.md`）：
+打入后查看代码上下文（各子系统核心目录见 `references/report_template.md` 子系统参考小节）：
 
 ```bash
 # 查看该子系统改动
@@ -196,7 +191,7 @@ python3 <skill_dir>/scripts/extract_patches.py --read <filepath>
 **保存报告：**
 
 ```bash
-REPORT_FILE="$OUTPUT_DIR/${SUBSYSTEM}-report-$(date +%Y-%m-%d).md"
+REPORT_FILE="$OUTPUT_DIR/<subsystem>-report-$(date +%Y-%m-%d).md"
 ```
 
 如有 NACK，在对应 feature 末尾标注 ⚠️。
