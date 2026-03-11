@@ -1,6 +1,6 @@
 ---
 name: lkml-analysis
-description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feature，生成详细中文报告（Markdown/PDF）。支持内存管理（mm）、调度（sched）、文件系统（fs）、网络（net）、块IO（block）等子系统。当用户说"分析 mm/sched/fs feature"、"生成内核子系统报告"、"linux 内核新特性"、"分析内核邮件列表"、"linux-mm 分析"、"内核 patch 分析"等时激活。首次使用时会引导配置邮件目录和输出目录。
+description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feature，生成详细中文报告（Markdown/PDF）。支持内存管理（mm）、调度（sched）、文件系统（fs）、网络（net）、块IO（block）等子系统。当用户说"分析 mm/sched/fs feature"、"linux 内核新特性"、"分析内核邮件列表"等时激活。首次使用时会引导配置邮件目录和输出目录。
 ---
 
 # Linux Kernel Mailing List Analysis Skill
