@@ -52,7 +52,7 @@ description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feat
 
 ## 第五步：生成报告
 
-过滤策略见 `references/filter_rules.md`，格式严格遵循 `references/report_template.md`。
+过滤策略见 `references/filter_rules.md`，格式**必须严格遵循** `references/report_template.md`。
 
 | hint | 操作 |
 |------|------|
