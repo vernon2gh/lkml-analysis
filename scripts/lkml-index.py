@@ -7,7 +7,7 @@ Usage:
 
 Output:
   /tmp/<subsystem>_index.json
-  打印：总数 + hint 分布（interesting / maybe / skip）
+  打印：总数
 
 Examples:
   python3 lkml-index.py mm --days 30
@@ -72,43 +72,6 @@ def is_noise_subject(subj):
         return True
     return False
 
-
-def hint_from_subject(subj):
-    s = subj.lower()
-    skip_patterns = [
-        r'\bcleanup\b', r'\bclean[ -]up\b', r'\bclean up\b',
-        r'\brefactor\b', r'\brefactoring\b',
-        r'\brename\b', r'\bmove\b.*\bto\b',
-        r'\bwhitespace\b', r'\bindentation\b', r'\bformatting\b',
-        r'\bcomment\b', r'\bdoc\b', r'\bdocument',
-        r'\bkconfig\b', r'\bspdx\b',
-        r'\bno.functional.change\b', r'\bnfc\b',
-        r'\bcosmetic\b', r'\btrivial\b',
-        r'\bspelling\b', r'\bgrammar\b',
-        r'\bsimplif', r'\bdedup\b',
-    ]
-    for pat in skip_patterns:
-        if re.search(pat, s):
-            return 'skip'
-
-    interesting_patterns = [
-        r'\badd\b', r'\bnew\b', r'\bintroduce\b', r'\bimplement\b',
-        r'\bsupport\b', r'\benable\b', r'\ballow\b',
-        r'\boptimiz', r'\bperformance\b', r'\bspeedup\b', r'\bfaster\b',
-        r'\breduce\b', r'\bavoid\b', r'\bimprove\b',
-        r'\bfix\b.*\bcorrupt', r'\bfix\b.*\bcras', r'\bfix\b.*\boom\b',
-        r'\bfix\b.*\bleak\b', r'\bfix\b.*\brace\b',
-        r'\bmechanism\b', r'\bpolicy\b', r'\balgorithm\b',
-        r'\bsyscall\b', r'\binterface\b', r'\bapi\b',
-        r'\bmmap\b', r'\bhugetlb\b', r'\bthp\b', r'\bfolio\b',
-        r'\bmglru\b', r'\bzswap\b', r'\bmemcg\b', r'\bnuma\b',
-        r'\bswap\b', r'\bcompaction\b', r'\bmigrat',
-    ]
-    for pat in interesting_patterns:
-        if re.search(pat, s):
-            return 'interesting'
-
-    return 'maybe'
 
 
 def read_email_body(fpath):
@@ -266,7 +229,6 @@ def build_index(maildir, days):
             'author_full':   author_raw,
             'status':        status,
             'total_patches': total_patches,
-            'hint':          hint_from_subject(cover_subj),
             'files':         files,
             'prev_covers':   prev_covers,
         })
@@ -322,17 +284,8 @@ def main():
     with open(index_file, 'w') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    hints = {'interesting': 0, 'maybe': 0, 'skip': 0}
-    for s in data['series']:
-        hints[s.get('hint', 'skip')] += 1
-
     print(f"索引已保存：{index_file}")
-    print(
-        f"共 {data['total']} 条系列  |  "
-        f"interesting={hints['interesting']}  "
-        f"maybe={hints['maybe']}  "
-        f"skip={hints['skip']}"
-    )
+    print(f"共 {data['total']} 条系列")
 
 
 if __name__ == '__main__':

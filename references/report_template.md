@@ -16,7 +16,7 @@
     1. [Feature 标题](#1-Feature-标题)
     2. [下一个 Feature](#2-下一个-Feature)
 
-每个 Feature 区块：
+Feature 区块：
 
     ## 1. Feature 标题
 
@@ -108,39 +108,3 @@
 - 中文说明后第一次出现时括号注英文：透明大页（THP）
 - 代码、函数名、文件名用 `代码格式`
 
-### 子系统参考
-
-#### mm — 内存管理
-- **报告标题**：`Linux 内存管理最新 Feature 分析报告`
-- **核心代码目录**：`mm/`, `include/linux/mm*.h`, `include/linux/memcontrol.h`
-- **保留英文术语**：folio, mTHP, THP, MGLRU, khugepaged, zswap, memcg, lruvec, compaction, migration, LRU, slab, vmalloc, mmap, hugetlb, page fault, swap, OOM, NUMA, zsmalloc, balloon
-
-#### sched — 进程调度
-- **报告标题**：`Linux 调度子系统最新 Feature 分析报告`
-- **核心代码目录**：`kernel/sched/`, `include/linux/sched*.h`, `include/uapi/linux/sched.h`
-- **保留英文术语**：CFS, EEVDF, vruntime, runqueue, cgroup, cpuset, load balancing, migration, throttling, preemption, RT, FIFO, deadline, idle, nohz, tick, latency, wakeup, affinity, cpufreq, energy-aware scheduling (EAS), NUMA balancing
-
-#### fs — 文件系统 / VFS
-- **报告标题**：`Linux 文件系统最新 Feature 分析报告`
-- **核心代码目录**：`fs/`, `include/linux/fs*.h`, `include/linux/dcache.h`
-- **保留英文术语**：VFS, inode, dentry, dcache, page cache, writeback, fsync, fallocate, xattr, mount, namei, readdir, splice, sendfile, mmap, tmpfs, ext4, btrfs, xfs, erofs, overlayfs, fuse
-
-#### net — 网络子系统
-- **报告标题**：`Linux 网络子系统最新 Feature 分析报告`
-- **核心代码目录**：`net/`, `include/net/`, `include/linux/netdevice.h`
-- **保留英文术语**：sk_buff, netdev, XDP, eBPF, TC, qdisc, socket, TCP, UDP, QUIC, TLS, offload, GRO, GSO, RSS, RPS, NAPI, bonding, bridge, vlan, vxlan, wireguard
-
-#### block — 块 IO
-- **报告标题**：`Linux 块IO子系统最新 Feature 分析报告`
-- **核心代码目录**：`block/`, `drivers/block/`, `include/linux/blk*.h`
-- **保留英文术语**：bio, request queue, blkcg, io scheduler, mq-deadline, kyber, bfq, nvme, virtio-blk, scsi, multipath, dm, md, zoned storage, uring
-
-#### io_uring
-- **报告标题**：`Linux io_uring 最新 Feature 分析报告`
-- **核心代码目录**：`io_uring/`, `include/linux/io_uring*.h`
-- **保留英文术语**：SQE, CQE, ring, submission queue, completion queue, fixed file, registered buffer, IOSQE, IORING, multishot, zero-copy
-
-#### bpf — BPF / eBPF
-- **报告标题**：`Linux BPF 最新 Feature 分析报告`
-- **核心代码目录**：`kernel/bpf/`, `net/core/filter.c`, `include/linux/bpf*.h`, `tools/lib/bpf/`
-- **保留英文术语**：map, prog, verifier, BTF, CO-RE, kprobe, uprobe, tracepoint, XDP, TC, cgroup, socket filter, ring buffer, arena, kfunc
