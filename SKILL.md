@@ -9,7 +9,17 @@ description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feat
 
 `<skill_dir>` = `~/.claude/skills/lkml-analysis`
 
-报告格式、写作规则统一定义在 `<skill_dir>/references/report_template.md`，subagent 和主 agent 均须遵循。
+报告格式、写作规则统一定义在 `<skill_dir>/references/report_template.md`，所有 agent 均须遵循。
+
+### Agent 角色命名
+
+| 角色 | 名称 | 职责 |
+|------|------|------|
+| 主 agent | **coordinator** | 统筹全流程：建索引、分发任务、汇总报告 |
+| 筛选 agent | **screener** | 分批阅读封面信，分类判定 interesting / 排除 |
+| 分析 agent | **analyzer** | 深入阅读 patch，撰写 feature 分析段落 |
+
+下文统一使用以上名称。
 
 ---
 
@@ -30,12 +40,29 @@ description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feat
 
 ---
 
-## 第三步：主 agent 阅读封面信，筛选 interesting
+## 第三步：screener 分批筛选 interesting 系列
 
-1. 读取 `/tmp/<subsystem>_index.json`，获取所有系列的概览（subject、author、date、files 路径）
-2. 逐个用 `python3 <skill_dir>/scripts/lkml-read.py <files['0'] 或 files['-1']>` 读取封面信/单 patch 完整内容
+coordinator 读取 `/tmp/<subsystem>_index.json`，获取所有系列的概览（subject、author、date、files 路径）。
 
-主 agent **逐条阅读**每条封面信的完整内容，分类判定：
+### 分批处理
+
+将系列列表按**每批 20 条**分组，对每一批启动一个 **screener** 并行筛选。
+
+#### screener prompt 模板
+
+```
+你是 Linux 内核 <子系统> patch 筛选专家。请对以下 patch 系列逐条阅读封面信并分类。
+
+## 工具
+- 读取邮件：`python3 <skill_dir>/scripts/lkml-read.py <filepath>`
+
+## 需要筛选的系列
+
+（列出本批 20 条的编号、subject、files['0'] 或 files['-1'] 路径）
+
+## 筛选规则
+
+**禁止仅凭标题判断分类。** 必须先用 lkml-read.py 读取封面信/patch 完整内容，再根据内容分类。
 
 | 分类 | 判定标准 | 分析深度 |
 |------|---------|---------|
@@ -44,17 +71,27 @@ description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feat
 | 普通 Bug Fix | Fixes: 标签、syzbot / Reported-by | 简略 |
 | 排除 | 纯清理/重构/NFC、纯文档/spelling、维护类（MAINTAINERS/mailmap）、"No functional change" | 跳过 |
 
-输出：一个**编号列表**，标明每条系列的分类和简要理由。
+## 输出
+
+返回一个编号列表，标明每条系列的分类和简要理由（必须体现你从封面信中读到的关键信息）。
+对于分类为"排除"的，也必须给出从内容中得出的理由，不可只说"标题看起来像清理"。
+```
+
+#### screener 使用方式
+
+- 使用 `Agent` 工具，`subagent_type` 为 `general-purpose`
+- 所有批次的 screener **并行**启动
+- coordinator 收集所有批次的筛选结果，合并为完整的分类列表
 
 ---
 
-## 第四步：分发 subagent 并行深入分析
+## 第四步：analyzer 并行深入分析
 
-将所有 interesting 系列分组（每组 2~4 个 feature），每组启动一个 **subagent**。
+coordinator 将所有 interesting 系列分组（每组 2~4 个 feature），每组启动一个 **analyzer**。
 
-### subagent 任务 prompt 模板
+### analyzer prompt 模板
 
-给每个 subagent 的 prompt 须包含以下内容：
+给每个 analyzer 的 prompt 须包含以下内容：
 
 ```
 你是 Linux 内核 <子系统> patch 分析专家。请对以下 patch 系列进行深入分析，为每个系列写一个完整的 feature 分析段落。
@@ -80,17 +117,17 @@ description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feat
 分析步骤：先读封面信理解动机 → 读关键 patch 理解实现 → 如有历史版本对比 changelog
 ```
 
-### subagent 使用方式
+### analyzer 使用方式
 
 - 使用 `Agent` 工具，`subagent_type` 为 `general-purpose`
-- 独立的 subagent 之间**并行**启动（同一条消息中发多个 Agent 调用）
-- 每个 subagent 返回其负责的 feature 分析文本
+- 独立的 analyzer 之间**并行**启动（同一条消息中发多个 Agent 调用）
+- 每个 analyzer 返回其负责的 feature 分析文本
 
 ### 可选：打 patch 深入分析
 
 运行 `python3 <skill_dir>/scripts/lkml-config.py check-kernel` 检测当前目录是否为内核源码树。
 
-**KERNEL_TREE** 时，可在 subagent prompt 中额外说明：
+**KERNEL_TREE** 时，可在 analyzer prompt 中额外说明：
 
 - 对仅凭 diff 难以理解上下文的系列，运行 `python3 <skill_dir>/scripts/lkml-apply.py <Message-ID> --maildir <maildir>` 应用 patch
 - 用 `git show <branch>:<dir>/<file>` 查看改动
@@ -100,9 +137,9 @@ description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feat
 
 ---
 
-## 第五步：主 agent 汇总报告
+## 第五步：coordinator 汇总报告
 
-收集所有 subagent 返回的分析文本，**必须严格**按 `references/report_template.md` 组装完整报告。
+收集所有 analyzer 返回的分析文本，**必须严格**按 `references/report_template.md` 组装完整报告。
 
 保存报告：用 `python3 <skill_dir>/scripts/lkml-config.py report-path <subsystem>` 获取报告路径，写入该文件。
 
