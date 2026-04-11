@@ -21,7 +21,7 @@ Feature 区块：
     ## 1. Feature 标题
 
     **系列**：`[PATCH vN 00/N] xxx`
-    **作者：** xxx
+    **作者：** 姓名（公司）
     **版本：** vN（N个patch）/ RFC
 
     ### 背景
