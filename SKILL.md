@@ -111,7 +111,6 @@ coordinator 将所有 interesting 系列分组（每组 2~4 个 feature），每
 ### 系列 A：<标题>
 - 封面信：<files['0'] 或 files['-1'] 的路径>
 - Patch 文件：<files['1'], files['2'], ... 的路径>
-- 历史版本封面：<prev_covers 路径（如有）>
 
 ### 系列 B：<标题>
 （同上格式）
@@ -120,7 +119,7 @@ coordinator 将所有 interesting 系列分组（每组 2~4 个 feature），每
 
 严格遵循 `<skill_dir>/references/report_template.md` 中的"Feature 区块"格式和写作要求。
 
-分析步骤：先读封面信理解动机 → 读关键 patch 理解实现 → 如有历史版本对比 changelog
+分析步骤：先读封面信理解动机 → 读关键 patch 理解实现，二者缺一不可，不能只读封面。
 ```
 
 ### analyzer 使用方式

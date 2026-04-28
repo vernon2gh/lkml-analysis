@@ -13,12 +13,12 @@
 目录区：
 
     ## 目录
-    1. [Feature 标题](#1-Feature-标题)
+    1. [Feature 中文标题](#1-Feature-中文标题)
     2. [下一个 Feature](#2-下一个-Feature)
 
 Feature 区块：
 
-    ## 1. Feature 标题
+    ## 1. Feature 中文标题
 
     **系列**：`[PATCH vN 00/N] xxx`
     **作者：** 只列出作者姓名，如果存在多个作者以,分隔列出
