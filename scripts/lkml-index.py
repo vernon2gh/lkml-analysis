@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-建立子系统 patch 系列索引，保存到 /tmp/<subsystem>_index.json。
+建立子系统 patch 系列索引，保存到 ./<subsystem>_index.json。
 
 Usage:
   python3 lkml-index.py <subsystem> [--days N] [--maildir <path>]
 
 Output:
-  /tmp/<subsystem>_index.json
+  ./<subsystem>_index.json
   打印：总数
 
 Examples:
@@ -277,7 +277,7 @@ def main():
     else:
         maildir = os.path.join(load_mail_base(), args.subsystem)
 
-    index_file = f'/tmp/{args.subsystem}_index.json'
+    index_file = f'./{args.subsystem}_index.json'
 
     data = build_index(maildir, args.days)
 

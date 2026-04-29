@@ -43,7 +43,7 @@ description: 分析 Linux 内核各子系统邮件列表中最近N天的新 feat
 
 ## 第三步：screener 分批筛选 interesting 系列
 
-coordinator 读取 `/tmp/<subsystem>_index.json`，获取所有系列的概览（subject、author、date、files 路径）。
+coordinator 读取 `./<subsystem>_index.json`，获取所有系列的概览（subject、author、date、files 路径）。
 
 > **强制规则：**
 > **必须启动 screener subagent 完成筛选**，coordinator 自身**禁止**直接根据标题、作者、patch 数等元数据做入选/排除判断。即便系列数很少（例如 < 20）也必须走 screener 流程；少量系列时 coordinator 仍启动 1 个 screener，而不是自行代劳。
