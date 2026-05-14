@@ -71,7 +71,7 @@ coordinator 读取 `./<subsystem>_index.json`，获取所有系列的概览（su
 | 分类 | 判定标准 | 是否需要 analyzer 分析 |
 |------|----------|--------------------------|
 | Feature / 优化 | 新机制、新算法/策略、性能优化 | 是 |
-| Bug Fix | 数据损坏、内核崩溃、内存泄漏、死锁、Fixes: 标签 | 是 |
+| Bug Fix | 数据损坏、内核崩溃、内存泄漏、死锁、Fixes: 标签 | 否 |
 | 排除 | 与<子系统>无关，纯清理/重构/NFC、纯文档/spelling、维护类（MAINTAINERS/mailmap）、"No functional change" | 否 |
 
 ## 输出
